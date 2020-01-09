@@ -1,0 +1,6 @@
+{
+	"port":8888,
+	"resendHost": "www.todoalojamiento.com",
+	"resendPort": 443,
+	"resendPath": "/rest/mensajes/whatsapp/mensaje"
+}

@@ -4,11 +4,10 @@ const http = require('http');
 const url= require('url');
 const {Client} = require("whatsapp-web.js");
 
-if (fs.existsSync('./config.json')) {
-  var sessionCfg = require('./config.json');
+if (fs.existsSync('./session.json')) {
+  var sessionCfg = require('./session.json');
 }
-
-
+const config = require('./config.json');
 
 const client = new Client({puppeteer: {headless: false
  , args: [
@@ -62,7 +61,7 @@ http.createServer(async function (req, res) {
 	} 
 
     res.end();
-}).listen(8888);
+}).listen(config.port);
 
 client.initialize();
 
@@ -73,8 +72,8 @@ client.on('qr', (qr) => {
 
 client.on('authenticated', (session) => {
     console.log('AUTHENTICATED', session);
-    if (!fs.existsSync('./config.json')) {
-        fs.writeFile("./config.json", JSON.stringify(session), function(err) {
+    if (!fs.existsSync('./session.json')) {
+        fs.writeFile("./session.json", JSON.stringify(session), function(err) {
             if (err) {
                 console.log(err);
             }
@@ -96,19 +95,22 @@ client.on('ready', () => {
 client.on('message', async msg => {
     console.log('MESSAGE RECEIVED', msg);
     
-    if(msg.body == '!mediainfo' && msg.hasMedia) {
+    if( msg.hasMedia) {
       const attachmentData = await msg.downloadMedia();
-      msg.reply(`
+      console.log(`
           *Media info*
           MimeType: ${attachmentData.mimetype}
           Filename: ${attachmentData.filename}
           Data (length): ${attachmentData.data.length}
-      `);    
-	  transmitMessage(msg);
-	  if (msg.body == 'IsAlive?') {
-		  // Send a new message as a reply to the current one
-		  msg.reply('YesSir');
-	  }
+      `);
+      msg.attachmentData=attachmentData;
+   //   transmitMessage(attachmentData);
+    }
+	transmitMessage(msg);
+	if (msg.body == 'IsAlive?') {
+  // Send a new message as a reply to the current one
+	  msg.reply('YesSir');
+	}
 
 //    if (msg.body == '!ping reply') {
 //        // Send a new message as a reply to the current one
@@ -179,9 +181,9 @@ function transmitMessage(msg){
 
 
 	var httpsOptions = {
-	  host: 'www.todoalojamiento.com',
-	  port: 443,
-	  path: '/rest/mensajes/whatsapp/mensaje',
+	  host: config.resendHost,
+	  port: config.resendPort,
+	  path: config.resendPath,
 	  method: 'POST'
 	};
 
