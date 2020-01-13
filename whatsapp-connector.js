@@ -31,7 +31,7 @@ const client = new Client({puppeteer: {headless: false
 } ,session:sessionCfg});
 // You can use an existing session and avoid scanning a QR code by adding a "session" object to the client options.
 // This object must include WABrowserId, WASecretBundle, WAToken1 and WAToken2.
-
+var usersData=new Map();
 
 http.createServer(async function (req, res) {
     res.writeHead(200, {'Content-Type': 'application/json'});
@@ -49,13 +49,21 @@ http.createServer(async function (req, res) {
 		res.write(JSON.stringify(chat));
 		break;
 	case 'sendMessage':
-		await client.sendMessage(url_parts.query.chatId, url_parts.query.message);
-		
+		if (req.method === 'POST') {
+		    let body = '';
+		    req.on('data', chunk => {
+		        body += chunk.toString(); // convert Buffer to string
+		    });
+		    req.on('end',async () => {
+		        bodyJson=JSON.parse(body);
+				await client.sendMessage(bodyJson.chatId, bodyJson.message);
+				console.log(body);
+				res.end('ok');
+		    });
+		}else
+			await client.sendMessage(url_parts.query.chatId, url_parts.query.message);
 		break;
-	case 'sendMessage':
-		await client.sendMessage(url_parts.query.chatId, url_parts.query.message);
 		
-		break;		
 	default:
 		break;
 	} 
@@ -94,6 +102,12 @@ client.on('ready', () => {
 
 client.on('message', async msg => {
     console.log('MESSAGE RECEIVED', msg);
+	if (!usersData.has(msg.from)){
+		var chat= await client.getChatById(msg.from);
+		console.log("adding chat to map")
+		usersData.set(msg.from,chat)
+	}
+    msg.profile=usersData.get(msg.from);
     
     if( msg.hasMedia) {
       const attachmentData = await msg.downloadMedia();
@@ -104,11 +118,9 @@ client.on('message', async msg => {
           Data (length): ${attachmentData.data.length}
       `);
       msg.attachmentData=attachmentData;
-   //   transmitMessage(attachmentData);
     }
 	transmitMessage(msg);
 	if (msg.body == 'IsAlive?') {
-  // Send a new message as a reply to the current one
 	  msg.reply('YesSir');
 	}
 
