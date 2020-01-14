@@ -1,0 +1,30 @@
+{
+  "name": "whatsapp-connector",
+  "version": "0.1.0",
+  "description": "Whatsapp API ",
+  "main": "./whatsapp-connector.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabriel-tandil/whatsapp-connector.git"
+  },
+  "keywords": [
+    "whatsapp",
+    "whatsapp-web",
+    "api",
+    "bot",
+    "client",
+    "node"
+  ],
+  "author": "Gabriel Alvarez",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/gabriel-tandil/whatsapp-connector/issues"
+  },
+  "homepage": "https://github.com/gabriel-tandil/whatsapp-connector#readme",
+  "dependencies": {
+    "whatsapp-web.js": "^0.3.1"
+  }
+}
