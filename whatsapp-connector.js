@@ -10,7 +10,7 @@ if (fs.existsSync('./session.json')) {
 }
 const config = require('./config.json');
 
-const client = new Client({puppeteer: {headless: false
+const client = new Client({puppeteer: {headless: true
  , args: [
         '--log-level=3', // fatal only
         '--start-maximized',
