@@ -77,7 +77,7 @@ client.initialize();
 client.on('qr', (qr) => {
     // NOTE: This event will not be fired if a session is specified.
     console.log('QR RECEIVED', qr);
-    qrcode.generate(qr);
+    qrcode.generate(qr,{small: true});
 });
 
 client.on('authenticated', (session) => {
