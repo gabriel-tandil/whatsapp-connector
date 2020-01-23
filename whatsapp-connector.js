@@ -170,8 +170,18 @@ client.on('message_create', (msg) => {
     }
 })
 
+	function sleep(ms){
+	    return new Promise(resolve=>{
+	        setTimeout(resolve,ms)
+	    })
+	}
+
 client.on('disconnected', () => {
     console.log('Client was logged out');
+   
+    sleep(Math.floor(Math.random() * Math.floor(4000)+1000));
+    console.log('reconecting');
+    client.initialize();
 })
 
 
