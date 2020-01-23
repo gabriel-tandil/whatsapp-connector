@@ -104,6 +104,11 @@ client.on('ready', () => {
 
 client.on('message', async msg => {
     console.log('MESSAGE RECEIVED', msg);
+    if (msg.from=='status@broadcast'){
+    	console.log('STATUS MESSAGE');
+    	return;
+    }
+    	
 	if (!usersData.has(msg.from)){
 		var chat= await client.getChatById(msg.from);
 		console.log("adding chat to map")
