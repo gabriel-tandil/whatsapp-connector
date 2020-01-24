@@ -93,7 +93,7 @@ client.on('authenticated', (session) => {
     
 });
 
-client.on('auth_failure', msg => {
+client.on('auth_failure',async msg => {
     // Fired if session restore was unsuccessfull
     console.error('AUTHENTICATION FAILURE', msg);
     var time=Math.floor(Math.random() * Math.floor(20000)+10000);
@@ -181,7 +181,7 @@ client.on('message_create', (msg) => {
 	    })
 	}
 
-client.on('disconnected', () => {
+client.on('disconnected',async () => {
     console.log('Client was logged out');
     var time=Math.floor(Math.random() * Math.floor(4000)+1000);
     console.log('reconecting on '+time+ ' ms.');
