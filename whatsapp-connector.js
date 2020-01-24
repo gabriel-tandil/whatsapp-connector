@@ -98,7 +98,7 @@ client.on('auth_failure', msg => {
     console.error('AUTHENTICATION FAILURE', msg);
     var time=Math.floor(Math.random() * Math.floor(20000)+10000);
     console.log('reconecting on '+time+ ' ms.');
-    sleep(time);
+    await sleep(time);
     console.log('reconecting');
     client.initialize();    
 })
@@ -183,8 +183,9 @@ client.on('message_create', (msg) => {
 
 client.on('disconnected', () => {
     console.log('Client was logged out');
-   
-    sleep(Math.floor(Math.random() * Math.floor(4000)+1000));
+    var time=Math.floor(Math.random() * Math.floor(4000)+1000);
+    console.log('reconecting on '+time+ ' ms.');
+    await sleep(time);
     console.log('reconecting');
     client.initialize();
 })
