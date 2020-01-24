@@ -96,6 +96,10 @@ client.on('authenticated', (session) => {
 client.on('auth_failure', msg => {
     // Fired if session restore was unsuccessfull
     console.error('AUTHENTICATION FAILURE', msg);
+    
+    sleep(Math.floor(Math.random() * Math.floor(20000)+10000));
+    console.log('reconecting');
+    client.initialize();    
 })
 
 client.on('ready', () => {
