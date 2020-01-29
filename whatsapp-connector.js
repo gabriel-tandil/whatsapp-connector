@@ -122,14 +122,26 @@ client.on('message', async msg => {
     msg.profile=usersData.get(msg.from);
     
     if( msg.hasMedia) {
-      const attachmentData = await msg.downloadMedia();
-      console.log(`
-          *Media info*
-          MimeType: ${attachmentData.mimetype}
-          Filename: ${attachmentData.filename}
-          Data (length): ${attachmentData.data.length}
-      `);
-      msg.attachmentData=attachmentData;
+    	var attachmentData="";
+    	Promise.race([
+    		attachmentData= await msg.downloadMedia(),
+    	    
+    	    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 11.5e3))
+    	]).catch(function(err) {
+            if (err.name === 'timeout') {
+            	console.log("timeout downloadattachments.")
+            }else{
+              throw err;
+            }
+    	});
+    	  console.log(`
+    	          *Media info*
+    	          MimeType: ${attachmentData.mimetype}
+    	          Filename: ${attachmentData.filename}
+    	          Data (length): ${attachmentData.data.length}
+    	      `);
+    	      msg.attachmentData=attachmentData;
+
     }
 	transmitMessage(msg);
 	if (msg.body == 'IsAlive?') {
