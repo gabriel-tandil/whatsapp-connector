@@ -10,26 +10,27 @@ if (fs.existsSync('./session.json')) {
 }
 const config = require('./config.json');
 
-const client = new Client({puppeteer: {headless: true
- , args: [
-        '--log-level=3', // fatal only
-        '--start-maximized',
-        '--no-default-browser-check',
-        '--disable-infobars', 
-        '--disable-web-security',
-        '--disable-site-isolation-trials',
-        '--no-experiments',
-        '--ignore-gpu-blacklist',
-        '--ignore-certificate-errors',
-        '--ignore-certificate-errors-spki-list',
-        '--disable-gpu',
-        '--disable-extensions',
-        '--disable-default-apps',
-        '--enable-features=NetworkService',
-        '--disable-setuid-sandbox',
-        '--no-sandbox'
-      ]
-} ,session:sessionCfg});
+var client = new Client({puppeteer: {headless: true
+	 , args: [
+	        '--log-level=3', // fatal only
+	        '--start-maximized',
+	        '--no-default-browser-check',
+	        '--disable-infobars', 
+	        '--disable-web-security',
+	        '--disable-site-isolation-trials',
+	        '--no-experiments',
+	        '--ignore-gpu-blacklist',
+	        '--ignore-certificate-errors',
+	        '--ignore-certificate-errors-spki-list',
+	        '--disable-gpu',
+	        '--disable-extensions',
+	        '--disable-default-apps',
+	        '--enable-features=NetworkService',
+	        '--disable-setuid-sandbox',
+	        '--no-sandbox'
+	      ]
+	} ,session:sessionCfg});
+
 // You can use an existing session and avoid scanning a QR code by adding a "session" object to the client options.
 // This object must include WABrowserId, WASecretBundle, WAToken1 and WAToken2.
 var usersData=new Map();
@@ -82,25 +83,20 @@ client.on('qr', (qr) => {
 
 client.on('authenticated', (session) => {
     console.log('AUTHENTICATED', session);
-    if (!fs.existsSync('./session.json')) {
-        fs.writeFile("./session.json", JSON.stringify(session), function(err) {
+        sessionCfg=session;
+    	fs.writeFile("./session.json", JSON.stringify(session), function(err) {
             if (err) {
                 console.log(err);
             }
         });
-
-    }
     
 });
 
 client.on('auth_failure',async msg => {
     // Fired if session restore was unsuccessfull
     console.error('AUTHENTICATION FAILURE', msg);
-    var time=Math.floor(Math.random() * Math.floor(20000)+10000);
-    console.log('reconecting on '+time+ ' ms.');
-    await sleep(time);
-    console.log('reconecting');
-    client.initialize();    
+    process.exit(3);
+  
 })
 
 client.on('ready', () => {
@@ -195,11 +191,8 @@ client.on('message_create', (msg) => {
 
 client.on('disconnected',async () => {
     console.log('Client was logged out');
-    var time=Math.floor(Math.random() * Math.floor(4000)+1000);
-    console.log('reconecting on '+time+ ' ms.');
-    await sleep(time);
-    console.log('reconecting');
-    client.initialize();
+
+    process.exit(2);
 })
 
 
