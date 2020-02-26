@@ -26,6 +26,6 @@
   "homepage": "https://github.com/gabriel-tandil/whatsapp-connector#readme",
   "dependencies": {
     "qrcode-terminal": "^0.12.0",
-    "whatsapp-web.js": "^0.3.2"
+    "whatsapp-web.js": ">=1.0"
   }
 }
