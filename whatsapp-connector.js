@@ -112,8 +112,22 @@ client.on('message', async msg => {
     	
 	if (!usersData.has(msg.from)){
 		var chat= await client.getChatById(msg.from);
-		console.log("adding chat to map")
-		usersData.set(msg.from,chat)
+		console.log("adding chat to map");
+		var contact="";
+    	Promise.race([
+    		contact= await msg.getContact(),
+    	    
+    	    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 11.5e3))
+    	]).catch(function(err) {
+            if (err.name === 'timeout') {
+            	console.log("timeout getContact.");
+            }else{
+              throw err;
+            }
+    	});
+		
+		chat.contact=contact;
+		usersData.set(msg.from,chat);
 	}
     msg.profile=usersData.get(msg.from);
     
@@ -125,7 +139,7 @@ client.on('message', async msg => {
     	    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 11.5e3))
     	]).catch(function(err) {
             if (err.name === 'timeout') {
-            	console.log("timeout downloadattachments.")
+            	console.log("timeout downloadattachments.");
             }else{
               throw err;
             }
