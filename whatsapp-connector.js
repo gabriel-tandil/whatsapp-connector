@@ -215,7 +215,7 @@ try{
 }catch(err){
     console.log(err);
 
-    process.exit(2);
+    process.exit(4);
 }
 
 
