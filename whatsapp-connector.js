@@ -1,4 +1,4 @@
-
+require('console-stamp')(console, '[HH:MM:ss.l]');
 var fs = require('fs');
 var qrcode = require('qrcode-terminal');
 const https = require("https");
@@ -11,8 +11,36 @@ if (fs.existsSync('./session.json')) {
 }
 const config = require('./config.json');
 
+
+
 try{
 
+	//Makes the script crash on unhandled rejections instead of silently
+	//ignoring them. In the future, promise rejections that are not handled will
+	//terminate the Node.js process with a non-zero exit code.
+	process.on('unhandledRejection', (reason, promise) => {
+		 console.log('unhandledRejection: ');// + JSON.stringify(promise, null, 2));
+	//	console.log('unhandledRejection');
+		 process.exit(5);
+	});
+
+//	var somevar = false;
+//	var PTest = function () {
+//	    return new Promise(function (resolve, reject) {
+//	        if (somevar === true)
+//	            resolve();
+//	        else
+//	            reject();
+//	    });
+//	}
+//	var myfunc = PTest();
+//	myfunc.then(function () {
+//	     console.log("Promise Resolved");
+//	});
+//	.catch(function () {
+//	     console.log("Promise Rejected");
+//	});
+	
 	var client = new Client({puppeteer: {headless: true
 		 , args: [
 		        '--log-level=3', // fatal only
@@ -30,7 +58,11 @@ try{
 		        '--disable-default-apps',
 		        '--enable-features=NetworkService',
 		        '--disable-setuid-sandbox',
-		        '--no-sandbox'
+		        '--no-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--no-first-run',
+                '--no-zygote'	        
 		      ]
 		} ,session:sessionCfg});
 	
