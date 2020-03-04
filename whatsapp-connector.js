@@ -68,7 +68,33 @@ try{
 	
 	// You can use an existing session and avoid scanning a QR code by adding a "session" object to the client options.
 	// This object must include WABrowserId, WASecretBundle, WAToken1 and WAToken2.
-	var usersData=new Map();
+	
+	var usersData=new Map(); //store user data
+	
+	var lastMessageTimestamp=new Map(); //store last message time for every chat
+	
+	setInterval(deleteOldChats, 10*60*1000);
+	
+	 function deleteOldChats() {
+	  console.log('deleting old chats');
+	  const f = async function(value,key,map){
+		//  console.debug(Date.now());
+		//  console.debug(value);
+		//  console.debug(key);
+	    	if ((Date.now()-value)>30*60*1000){
+	    		var chat= await client.getChatById(key);
+	    		console.log('deleting '
+	    				+key);
+	    		chat.delete();
+	    		map.delete(key);
+	    	}
+	    		
+	    };
+	    console.log(lastMessageTimestamp);
+	  
+	  lastMessageTimestamp
+	    .forEach(f)
+	}
 	
 	http.createServer(async function (req, res) {
 	    res.writeHead(200, {'Content-Type': 'application/json'});
@@ -156,6 +182,7 @@ try{
 	    	]).catch(function(err) {
 	            if (err.name === 'timeout') {
 	            	console.log("timeout getContact.");
+	      		    lastMessageTimestamp.delete(msg.from);  //if there is an error I remove chat from the map so that it is not removed from whatsapp
 	            }else{
 	              throw err;
 	            }
@@ -166,6 +193,8 @@ try{
 		}
 	    msg.profile=usersData.get(msg.from);
 	    
+	    lastMessageTimestamp.set(msg.from,Date.now());
+	    
 	    if( msg.hasMedia) {
 	    	var attachmentData="";
 	    	Promise.race([
@@ -174,7 +203,8 @@ try{
 	    	    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 11.5e3))
 	    	]).catch(function(err) {
 	            if (err.name === 'timeout') {
-	            	console.log("timeout downloadattachments.");
+	            	console.log("timeout downloadMedia.");
+	      		    lastMessageTimestamp.delete(msg.from);  //if there is an error I remove chat from the map so that it is not removed from whatsapp
 	            }else{
 	              throw err;
 	            }
@@ -215,6 +245,7 @@ try{
 	
 		req.on('error', function(e) {
 		  console.log('problem with request: ' + e.message);
+		  lastMessageTimestamp.delete(msg.from);  //if there is an error I remove chat from the map so that it is not removed from whatsapp
 		});
 	
 		// write data to request body
