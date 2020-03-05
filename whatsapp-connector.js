@@ -73,19 +73,25 @@ try{
 	
 	var lastMessageTimestamp=new Map(); //store last message time for every chat
 	
-	setInterval(deleteOldChats, 10*60*1000);
+	function getRandomInt(min, max) {
+		  min = Math.ceil(min);
+		  max = Math.floor(max);
+		  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+		}
 	
-	 function deleteOldChats() {
-	  console.log('deleting old chats');
+	setInterval(archiveOldChats, getRandomInt(7, 20)*60*1000);
+	
+	 function archiveOldChats() {
+	  console.log('archiving old chats');
 	  const f = async function(value,key,map){
 		//  console.debug(Date.now());
 		//  console.debug(value);
 		//  console.debug(key);
-	    	if ((Date.now()-value)>30*60*1000){
+	    	if ((Date.now()-value)>getRandomInt(30, 60)*60*1000){
 	    		var chat= await client.getChatById(key);
-	    		console.log('deleting '
+	    		console.log('archiving '
 	    				+key);
-	    		chat.delete();
+	    		chat.archive();
 	    		map.delete(key);
 	    	}
 	    		
@@ -139,7 +145,9 @@ try{
 	client.on('qr', (qr) => {
 	    // NOTE: This event will not be fired if a session is specified.
 	    console.log('QR RECEIVED', qr);
-	    qrcode.generate(qr,{small: true});
+	    qrcode.generate(qr,{small: true}, function (qr) {
+	        console.log("QR:\n"+qr);
+	    });
 	});
 	
 	client.on('authenticated', (session) => {
@@ -182,7 +190,7 @@ try{
 	    	]).catch(function(err) {
 	            if (err.name === 'timeout') {
 	            	console.log("timeout getContact.");
-	      		    lastMessageTimestamp.delete(msg.from);  //if there is an error I remove chat from the map so that it is not removed from whatsapp
+	      		    lastMessageTimestamp.delete(msg.from);  //if there is an error I remove chat from the map so that it is not archived in whatsapp
 	            }else{
 	              throw err;
 	            }
@@ -204,7 +212,7 @@ try{
 	    	]).catch(function(err) {
 	            if (err.name === 'timeout') {
 	            	console.log("timeout downloadMedia.");
-	      		    lastMessageTimestamp.delete(msg.from);  //if there is an error I remove chat from the map so that it is not removed from whatsapp
+	      		    lastMessageTimestamp.delete(msg.from);  //if there is an error I remove chat from the map so that it is not archived in whatsapp
 	            }else{
 	              throw err;
 	            }
@@ -245,7 +253,7 @@ try{
 	
 		req.on('error', function(e) {
 		  console.log('problem with request: ' + e.message);
-		  lastMessageTimestamp.delete(msg.from);  //if there is an error I remove chat from the map so that it is not removed from whatsapp
+		  lastMessageTimestamp.delete(msg.from);  //if there is an error I remove chat from the map so that it is not archived in whatsapp
 		});
 	
 		// write data to request body
