@@ -20,7 +20,8 @@ try{
 	//terminate the Node.js process with a non-zero exit code.
 	process.on('unhandledRejection', (reason, promise) => {
 		 console.log('unhandledRejection: ');// + JSON.stringify(promise, null, 2));
-	//	console.log('unhandledRejection');
+		if (reason) console.log(JSON.stringify(reason, null, 2));
+		if (promise) console.log(JSON.stringify(promise, null, 2));
 		 process.exit(5);
 	});
 
@@ -64,7 +65,7 @@ try{
                 '--no-first-run',
                 '--no-zygote'	        
 		      ]
-		} ,session:sessionCfg});
+		} ,session:sessionCfg,authTimeoutMs:145000});
 	
 	// You can use an existing session and avoid scanning a QR code by adding a "session" object to the client options.
 	// This object must include WABrowserId, WASecretBundle, WAToken1 and WAToken2.
