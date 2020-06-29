@@ -128,7 +128,7 @@ try{
 			        bodyJson=JSON.parse(body);
 					await client.sendMessage(bodyJson.chatId, bodyJson.message);
 					console.log(body);
-					res.end('ok');
+//					res.end('ok');
 			    });
 			}else
 				await client.sendMessage(url_parts.query.chatId, url_parts.query.message);
