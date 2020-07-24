@@ -4,7 +4,7 @@ var qrcode = require('qrcode-terminal');
 const https = require("https");
 const http = require('http');
 const url= require('url');
-const {Client} = require("whatsapp-web.js");
+const {Client,Location} = require("whatsapp-web.js");
 
 if (fs.existsSync('./session.json')) {
   var sessionCfg = require('./session.json');
@@ -126,7 +126,35 @@ try{
 			    });
 			    req.on('end',async () => {
 			        bodyJson=JSON.parse(body);
-					await client.sendMessage(bodyJson.chatId, bodyJson.message);
+                    var msg=bodyJson.message;
+					const regexpGeo = /^(?:geo:)([+-]?\d+\.\d+),([+-]?\d+\.\d+)(?:;label=(.*))?$/m;
+					//const str = 'geo:-11.03287,45.89174;label= trinidad y bobago';
+					
+					const arrGeo = msg.match(regexpGeo);
+					
+					if (arrGeo) {
+					    msg=msg.replace(regexpGeo, '')
+						console.log("coordenadas: ");
+						var lat = arrGeo[1];
+						var long = arrGeo[2];
+						console.log(lat);
+						console.log(long);
+						var label = '';
+						if (arrGeo[3]) {
+							label = arrGeo[3];
+						}
+						console.log(label);				
+
+						msgGeo = new Location(lat, long, label);
+
+					}
+
+					if ((arrGeo&&msg!='') ||!arrGeo) // si no encontro coordenadas, o si encontro coordenadas y el mensaje aun tiene algo mas lo manda
+						await client.sendMessage(bodyJson.chatId, msg);
+
+					if (arrGeo) 
+						await client.sendMessage(bodyJson.chatId, msgGeo);
+					
 					console.log(body);
 //					res.end('ok');
 			    });
