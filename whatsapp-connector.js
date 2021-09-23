@@ -108,11 +108,12 @@ try {
 
 		req.on('error', function(e) {
 			console.log('problem with heartbeat request: ' + e.message);
-			
+
 		});
 
-		// write data to request body
-		req.write('"type":"heartBeat"');
+		const texto = '{"to":"' + client.info.wid._serialized + '","type":"heartBeat"}';
+		console.log(texto);
+		req.write(texto);
 
 		req.end();
 
@@ -206,10 +207,10 @@ try {
 							}
 
 							if ((arrGeo && msg != '') || !arrGeo) // si no encontro coordenadas, o si encontro coordenadas y el mensaje aun tiene algo mas lo manda
-								console.log(await client.sendMessage(bodyJson.chatId, msg).catch(function(err) { console.log(err); mensageRes = err  }));
+								console.log(await client.sendMessage(bodyJson.chatId, msg).catch(function(err) { console.log(err); mensageRes = err }));
 
 							if (arrGeo)
-								console.log(await client.sendMessage(bodyJson.chatId, msgGeo).catch(function(err) { console.log(err); mensageRes = err  }));
+								console.log(await client.sendMessage(bodyJson.chatId, msgGeo).catch(function(err) { console.log(err); mensageRes = err }));
 							if (mensageRes == "")
 								res.write('{"success":true}');
 							else
@@ -223,12 +224,12 @@ try {
 					}
 					);
 				} else {
-					await client.sendMessage(url_parts.query.chatId, url_parts.query.message).catch(function(err) { console.log(err); mensageRes = err  });
-							if (mensageRes == "")
-								res.write('{"success":true}');
-							else
-								res.write('{"success":false,"message":"' + mensageRes + '"}');
-							res.end();
+					await client.sendMessage(url_parts.query.chatId, url_parts.query.message).catch(function(err) { console.log(err); mensageRes = err });
+					if (mensageRes == "")
+						res.write('{"success":true}');
+					else
+						res.write('{"success":false,"message":"' + mensageRes + '"}');
+					res.end();
 
 				}
 
