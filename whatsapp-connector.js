@@ -4,14 +4,9 @@ var qrcode = require('qrcode-terminal');
 const https = require("https");
 const http = require('http');
 const url = require('url');
-const { Client, Location, MessageMedia } = require("whatsapp-web.js");
+const { Client, Location, MessageMedia, LocalAuth } = require("whatsapp-web.js");
 
-if (fs.existsSync('./session.json')) {
-	var sessionCfg = require('./session.json');
-}
 const config = require('./config.json');
-
-
 
 try {
 
@@ -44,6 +39,7 @@ try {
 	//	});
 
 	var client = new Client({
+		authStrategy: new LocalAuth(),
 		puppeteer: {
 			headless: true
 			, args: [
@@ -68,11 +64,10 @@ try {
 				'--no-first-run',
 				'--no-zygote'
 			]
-		}, session: sessionCfg, authTimeoutMs: 145000
+		},
+		authTimeoutMs: 145000
 	});
 
-	// You can use an existing session and avoid scanning a QR code by adding a "session" object to the client options.
-	// This object must include WABrowserId, WASecretBundle, WAToken1 and WAToken2.
 
 	var usersData = new Map(); //store user data
 
@@ -261,12 +256,6 @@ try {
 
 	client.on('authenticated', (session) => {
 		console.log('AUTHENTICATED', session);
-		sessionCfg = session;
-		fs.writeFile("./session.json", JSON.stringify(session), function(err) {
-			if (err) {
-				console.log(err);
-			}
-		});
 
 	});
 
